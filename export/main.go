@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/csv"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -14,8 +15,6 @@ import (
 )
 
 const (
-	REDISHOST = "127.0.0.1:6379"
-
 	SCAN    = "SCAN"
 	HKEYS   = "HKEYS"
 	HGET    = "HGET"
@@ -27,6 +26,8 @@ const (
 
 var (
 	c redis.Conn
+
+	redisHost string
 )
 
 type Bar struct {
@@ -84,7 +85,7 @@ func (bar *Bar) show() {
 
 			r, _ = time.ParseDuration(fmt.Sprintf("%.0fs", remain))
 			if r == "0s" {
-				r = ""
+				r = " "
 			}
 
 			s := fmt.Sprintf(STR, graph, float32(bar.cur) / float32(bar.total) * 100, bar.cur, bar.total, r)
@@ -105,7 +106,10 @@ type Data struct {
 func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 
-	conn, err := redis.Dial("tcp", REDISHOST)
+	flag.StringVar(&redisHost, "host", "127.0.0.1:6379", "redis host")
+	flag.Parse()
+
+	conn, err := redis.Dial("tcp", redisHost)
 	if err != nil {
 		log.Fatal(err)
 	}

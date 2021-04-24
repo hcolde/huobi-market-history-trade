@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -22,17 +23,21 @@ const (
 	HMSET = "HMSET"
 	KEY   = "history"
 
-	REDISHOST = "127.0.0.1:6379"
 	HUOBIHOST = "api.huobi.pro"
 )
 
 var (
 	duration = 30 * time.Second
+
+	redisHost string
 )
 
 func main() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt, os.Kill)
+
+	flag.StringVar(&redisHost, "host", "127.0.0.1:6379", "redis host")
+	flag.Parse()
 
 	log.SetFlags(log.Ltime | log.Lshortfile)
 
@@ -42,7 +47,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	c, err := redis.Dial("tcp", REDISHOST)
+	c, err := redis.Dial("tcp", redisHost)
 	if err != nil {
 		log.Fatal(err)
 	}
