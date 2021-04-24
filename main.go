@@ -16,8 +16,6 @@ import (
 )
 
 const (
-	SYMBOL = "dogeusdt"
-
 	MULTI = "MULTI"
 	EXEC  = "EXEC"
 	HMSET = "HMSET"
@@ -30,6 +28,7 @@ var (
 	duration = 30 * time.Second
 
 	redisHost string
+	symbol string
 )
 
 func main() {
@@ -37,6 +36,7 @@ func main() {
 	signal.Notify(quit, os.Interrupt, os.Kill)
 
 	flag.StringVar(&redisHost, "host", "127.0.0.1:6379", "redis host")
+	flag.StringVar(&symbol, "symbol", "dogeusdt", "symbol")
 	flag.Parse()
 
 	log.SetFlags(log.Ltime | log.Lshortfile)
@@ -62,7 +62,7 @@ func main() {
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
-				resp, err := marketClient.GetHistoricalTrade(SYMBOL, market.GetHistoricalTradeOptionalRequest{Size: 2000})
+				resp, err := marketClient.GetHistoricalTrade(symbol, market.GetHistoricalTradeOptionalRequest{Size: 2000})
 				if err != nil {
 					log.Println(err)
 					continue
