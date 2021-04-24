@@ -86,7 +86,7 @@ func main() {
 						t := time.Unix(d.Ts / 1000, 0)
 						f := t.Format("2006-01-02")
 
-						if err := c.Send(HMSET, fmt.Sprintf("%s-%s", KEY, f), d.TradeId, val); err != nil {
+						if err := c.Send(HMSET, fmt.Sprintf("%s-%s-%s", symbol, KEY, f), d.TradeId, val); err != nil {
 							log.Println(err)
 						}
 					}
